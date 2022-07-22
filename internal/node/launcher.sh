@@ -129,7 +129,14 @@ else
     *) readonly node_toolchain="nodejs_linux_amd64/bin/nodejs/bin/node" ;;
   esac
 
-  readonly node=$(rlocation "${node_toolchain}")
+  readonly oldstate="$(set +o)"
+  set +u
+  if [[ -n "${NODE_RUNTIME}" && -f "${NODE_RUNTIME}" ]]; then
+    node="${NODE_RUNTIME}"
+  else
+    node=$(rlocation "${node_toolchain}")
+  fi
+  eval "$oldstate" > /dev/null
 
   if [ ! -f "${node}" ]; then
       printf "\n>>>> FAIL: The node binary '${node_toolchain}' not found in runfiles.\n" >&2
